@@ -1,10 +1,13 @@
 #include "menu.h"
-#include<queue>
-
 using namespace std;
+int backmap[7][13];
  IMAGE guaiwu1, guaiwu2;
  int kx, ky;//ÎÑµÄÎ»ÖÃ
  int timeover;
+ int zx, zy;//ÂÜ²·µÄÎ»ÖÃ
+ bool jieshu = true;
+ radish bradish;//ÂÜ²·
+
 void MymciSendString(const char * szCommand , char* szbuffer)//const string szCommand)
 {
 	if (NULL == szbuffer)
@@ -42,26 +45,44 @@ void initialize()
 	while (1) { fillroundrect(200, 550, 400, 650, 30, 30); }
 	closegraph();
 }
+void showwwwwtime(gametime *l, map *a)
+{
+	l->check();
+	l->showcaichan();
+	l->showtime();
+}
 void game()
 {
 	
 }
 int main()
 {
+	
+	ExMessage m;
 	//initialize();
 	//game();
+	//initgraph(860, 550, EW_SHOWCONSOLE);
+	gametime l;
 	map a;
-	radish b;
-	a.upload(b);
-	initgraph(800, 550,EW_SHOWCONSOLE);
-	while (1)
+	a.upload(bradish);
+	initgraph(860, 550,EW_SHOWCONSOLE);
+	while (jieshu)
 	{
 		BeginBatchDraw();
-		a.show(b);
-		//line(0, 100, 800, 100);
-		transparentimage(0,0,80,80,0, 0, &guaiwu2, &guaiwu1);
-		//cout << &guaiwu1<<endl;
-		//putimage(0, 0, &guaiwu1);
+		a.show(bradish);
+		//putimage(0, 0, &t1);
+		//system("pause");
+		thread zh(showwwwwtime,&l,&a);
+		if (peekmessage(&m, EM_MOUSE)&& m.lbutton)
+		{
+			//cout << m.x<<m.y << endl;
+			l.mianban(m);
+		}
+		
+		l.showwwmian();
+		zh.join();
 		EndBatchDraw();
+		//Sleep(100);
+		cleardevice();
 	}
 }
