@@ -68,13 +68,14 @@ public:
 		v = c;
 		x = ky*60, y = kx*60;
 		//cout << kx << ky << endl;
-		blood = 10;
+		blood = 100;
 		for (int i = 0; i < 7; i++)for (int j = 0; j < 13; j++)
 		{
 			if (backmap[i][j] != 0)st[i][j] = true;
 		}
 		is_death = false;
 		//if (st[0][0])cout << "sss";
+		 tt = clock();
 	}
 	void attack(radish& a)
 	{
@@ -99,6 +100,10 @@ public:
 	{
 		return is_death;
 	}
+	void huoqu(int &a, int &b)
+	{
+		a = x, b = y;
+	}
 	virtual void showimage() = 0;
 	int x, y;//坐标
 private :
@@ -109,6 +114,8 @@ private :
 	int fx, fy;//用来位移
 	IMAGE tupian;
 	bool is_death;
+	int tt;//开始时间
+	int stt;//位移时间
 };
 class monst1 :public monst
 {
@@ -134,11 +141,10 @@ class gametime
 {
 public:
 	friend bullet1;
+	friend weapon;
 	gametime()
 	{
 		t = clock();
-		while (qun.size())qun.pop();
-		while (temm.size())temm.pop();
 		ba.push_back({ 3,{1,1} });
 		aa.push_back(1);
 		ba.push_back({ 100,{1,1} });
@@ -152,7 +158,7 @@ public:
 		loadimage(&tusheng2, _T("提升2.png"));
 		loadimage(&tu1, _T("火塔2.png"));
 		loadimage(&tu2, _T("火塔1.png"));
-		caichan = 300;
+		caichan = 1000;
 	}
 	//void settime();//设置时间波数
 	void generate(int lei, int size);
@@ -163,9 +169,11 @@ public:
 	void showwwmian();
 	void showcaichan();//展示有多少钱
 	void tisheng();//提升等级
+	void jiancheshifou();
+	void showhuopao();
 private:
 	int t;//时间;
-	queue<monst*>qun, temm;
+	vector<monst*>qun;
 	vector <weapon*> ta;
 	vector<PII> ba;
 	vector<int> aa;
@@ -186,23 +194,37 @@ public:
 		is_death = false;
 		gongjijuli = 10;
 	}
-	void gr()
+	void gr(gametime *l)
 	{
+		//system("pause");
+		l->caichan -= groop[deng];
 		if (deng < 2)deng++;
 	}
 	bool fandeath()
 	{
 		return is_death;
 	}
-	bool is_xiang(int a, int b)
+	bool is_xiang(int t,int a, int b)
 	{
-		return x == a && y == b;
+		return x == a && y == b && t >= groop[deng];
 	}
-	void setgongji(monst* tem)
+	bool jianche(monst *tem)
 	{
-		gongji = tem;
+		int tem1, tem2;
+		int ccx, ccy;
+		tem->huoqu(tem1, tem2);
+		//cout<<(x + 30 - tem1 - 60)* (x + 30 - tem1 - 60) + (y + 30 - tem2 - 30 - 100) * (y + 30 - tem2 - 30-100)<< endl;
+
+		if (gongji != NULL)return true;
+		if((x + 30 - tem1 - 60) * (x + 30 - tem1 - 60) + (y + 30 - tem2 - 30-100) * (y + 30 - tem2 - 30-100) < 50000)
+		{
+			gongji = tem;
+			cout << "kkk";
+			return true;
+		}
+		return false;
 	}
-	virtual void showimage(int a, int b) = 0;
+	virtual void showimage() = 0;
 private:
 	bool is_death;
 	int gongjijuli;
@@ -211,6 +233,8 @@ protected:
 	int deng;//等级
 	int t;//产生时间
 	monst* gongji;
+	int harm[3];
+	int groop[2];
 };
 class bullet1 :public weapon//塔类型1
 {
@@ -218,29 +242,34 @@ public:
 	bullet1(int a, int b,gametime*m) :weapon()
 	{
 		x = a, y = b;
-		m->caichan -= 200;
+		worth = 200;
+		deng = 0;
+		m->caichan -=worth;
 		loadimage(&tu1, _T("火塔2.png"));
 		loadimage(&tu2, _T("火塔1.png"));
-		harm[0] = 10, harm[1] = 20, harm[2] = 30;
+		harm[0] = 1, harm[1] = 2, harm[2] = 3;
 		groop[0] = 300, groop[1] = 400;
 		gongji = NULL;
 		backmap[(b-100) / 60][a / 60] = 11;//改变地图
-		int jiaodu;
+	   jiaodu=0;
+	   loadimage(&tt1[0], _T("火塔111.png"));
+	   loadimage(&tt2[0], _T("火塔112.png"));
+	   loadimage(&tt1[1], _T("火塔124.png"));
+	   loadimage(&tt2[1], _T("火塔122.png"));
+	   loadimage(&tt1[2], _T("火塔333.png"));
+	   loadimage(&tt2[2], _T("火塔334.png"));
+	   loadimage(&guangshu1, _T("光束.png"));
+	   loadimage(&guangshu2, _T("光束2.png"));
 	}
-	void showimage(int a, int b);//a,b为怪物的位置
-	void attack()
-	{
-
-	}
+	void showimage();
 	~bullet1()
 	{
 		backmap[x / 60][(y - 100) / 60] = 0;
 	}
 private:
-	int harm[3];
-	int groop[2];
-
+	IMAGE tt1[3],tt2[3];
+	IMAGE guangshu1, guangshu2;
 	IMAGE tu1, tu2;
 	int worth;
-	int jiaodu;
+	double jiaodu;
 };

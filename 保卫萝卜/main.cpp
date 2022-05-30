@@ -50,6 +50,7 @@ void showwwwwtime(gametime *l, map *a)
 	l->check();
 	l->showcaichan();
 	l->showtime();
+	l->showhuopao();
 }
 void game()
 {
@@ -66,23 +67,23 @@ int main()
 	map a;
 	a.upload(bradish);
 	initgraph(860, 550,EW_SHOWCONSOLE);
+	//weapon* tem = new bullet1(240, 220, &l);
+	
 	while (jieshu)
 	{
 		BeginBatchDraw();
 		a.show(bradish);
-		//putimage(0, 0, &t1);
-		//system("pause");
+		
 		thread zh(showwwwwtime,&l,&a);
+		l.jiancheshifou();
 		if (peekmessage(&m, EM_MOUSE)&& m.lbutton)
 		{
-			//cout << m.x<<m.y << endl;
+			cout << m.x<<m.y << endl;
 			l.mianban(m);
 		}
-		
-		l.showwwmian();
 		zh.join();
+		l.showwwmian();
 		EndBatchDraw();
-		//Sleep(100);
 		cleardevice();
 	}
 }

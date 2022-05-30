@@ -72,7 +72,7 @@ void monst::showblood()
 }
 void monst1::showimage()
 {
-	int a = t / 3%3;
+	int a = t / 50%3;
 	switch (a)
 	{
 	case 0:transparentimage(x, y+100, 120, 60, 6, 10, &guaiwu2, &guaiwu1); break;
@@ -83,11 +83,12 @@ void monst1::showimage()
 }
 void monst::move()
 {
+	stt = clock();
+	if (stt - tt < 100)return;
 	int dx[4] = { 0,1,-1,0 }, dy[4] = { 1,0,0,-1 };
 	//cout << x << y << "kkk" << endl;
-	
 	//if (st[0][0])cout << "llllllll";
-	cout << zx << zy << endl;
+	//cout << zx << zy << endl;
 	if (x % 60 == 0 && y % 60 == 0)
 	{
 		st[y / 60][x / 60] = false;
@@ -101,6 +102,7 @@ void monst::move()
 		//cout << a << b <<"ll"<< endl;
 	}
 	x +=  fx, y +=  fy;
+	tt = clock();
 }
 void gametime::showtime()
 {
@@ -114,24 +116,17 @@ void gametime::showtime()
 		{
 			this->generate(ba[i].second.first, ba[i].second.second);
 			aa[i] = 0;
-			cout << "lll" << endl;
+			//cout << "lll" << endl;
 		}
 	}
 }
 void gametime::check()
 {
-	while (qun.size())
+	for(int i=0;i<qun.size();i++)
 	{
-		auto j = qun.front();
-		qun.pop();
-		if (j->if_death())delete j;
-		else temm.push(j), j->showblood(), j->showimage(), j->move();
-	}
-	while (temm.size())
-	{
-		auto j = temm.front();
-		temm.pop();
-		qun.push(j);
+		
+		if (qun[i]->if_death())delete qun[i],qun.erase(qun.begin()+i),caichan+=300;
+		else qun[i]->showblood(), qun[i]->showimage(), qun[i]->move();
 	}
 	bool flag = false;
 	for (int i = 0; i < aa.size(); i++)if (aa[i] == 1)flag = true;
@@ -145,16 +140,11 @@ void gametime:: generate(int lei, int size)
 	case 1:for (int i = 0; i < size; i++)
 	{
 		monst* tem = new monst1(1);
-		qun.push(tem);
+		qun.push_back(tem);
 	}
 		  break;
 	default: break;
 	}
-}
-void bullet1::showimage(int a,int b)
-{
-	IMAGE tem1,tem2;
-	//rotateimage(&tem1, &tu, BLACK, );
 }
 void gametime::mianban(ExMessage a)
 {
@@ -185,6 +175,7 @@ void gametime::showmianban(int x, int y)
 		}
 		else if (ddy == sxy && sxx == ddx + 1 && backmap[sxx][sxy] != 0)
 		{
+			//cout << "jjjjjjjjj" << endl;
 			tisheng();
 			zhankai = false;
 		}
@@ -227,9 +218,78 @@ void gametime::showcaichan()
 }
 void gametime::tisheng()
 {
-	int temx = zkx / 60 * 60, temy = (zky-100)/ 60 * 60;
+	int temx = zkx / 60 * 60, temy = (zky-100)/ 60 * 60+100;
 	for (int i = 0; i < ta.size(); i++)
 	{
-		if (ta[i]->is_xiang(temx, temy))ta[i]->gr();
+		if (ta[i]->is_xiang(this->caichan, temx, temy))ta[i]->gr(this);
 	}
+}
+void gametime::jiancheshifou()
+{
+	for (int i = 0; i < ta.size(); i++)
+	{
+		for (int j = 0; j < qun.size(); j++)
+		{
+			//cout << "kkk" << endl;
+			if (ta[i]->jianche(qun[j]))break;
+		}
+	}
+}
+void bullet1::showimage()
+{
+	IMAGE ttem1,ttem2;
+	if (jiaodu >= 6.28)jiaodu = 0;
+	transparentimage(x+10, y+10, 60, 50, 345, 20, &tu1, &tu2);
+	rotateimage(&ttem1, &tt1[deng], jiaodu, WHITE);
+	rotateimage(&ttem2, &tt2[deng], jiaodu, BLACK);
+	transparentimage2(x , y , &ttem2, &ttem1); 
+	int tem1, tem2;
+	if (gongji == NULL)
+	{
+		if (jiaodu == 0)return;
+		if (jiaodu > 6.283 - jiaodu)
+		{
+			jiaodu += min(0.001, 6.283 - jiaodu);
+			return;
+		}
+		else
+		{
+			jiaodu -= min(0.001, jiaodu - 0);
+			return;
+		}
+		return;
+	}
+	
+	gongji->huoqu(tem1, tem2);
+	tem2 += 100;
+	double len = sqrt((y - tem2 - 5) * 1.0 * (y - tem2 - 5) * 1.0 + (tem1 + 35 - x) * 1.0 * (tem1 + 35 - x));
+	double ss = acos((tem1 + 35 - x) * 1.0 / len);
+	//cout << tem2 << " " << tem1 << " " << y << " " << x << endl;
+	if (abs(ss - jiaodu) < 0.002)
+	{
+		IMAGE hh,hh2;
+		rotateimage(&hh, &guangshu1, jiaodu, WHITE);
+		rotateimage(&hh2, &guangshu2, jiaodu, BLACK);
+		double zzx= (tem1 + 95 + x)*1.0/2, zzy = (tem2 + 65 + y) * 1.0 / 2;
+		double minx = min(tem1 + 65, x + 30), miny = min(tem2+35, y + 30);
+		transparentimage(minx,miny,2*zzx-2*minx,2*zzy-2*miny,400-zzx+minx,400-zzy+miny,&hh2,&hh);
+		jiaodu = ss;
+		gongji->injured(harm[deng]);
+		if (gongji->if_death())gongji = NULL;
+	}
+	else
+	{
+		if (ss > jiaodu )
+		{
+			jiaodu += 0.001;
+		}
+		else
+		{
+			jiaodu -= 0.001;
+		}
+	};
+}
+void gametime::showhuopao()
+{
+	for (int i = 0; i < ta.size(); i++)ta[i]->showimage();
 }
