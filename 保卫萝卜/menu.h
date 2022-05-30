@@ -147,10 +147,14 @@ public:
 		t = clock();
 		ba.push_back({ 3,{1,1} });
 		aa.push_back(1);
+		ba.push_back({ 10,{1,1} });
+		aa.push_back(1);
+		ba.push_back({ 15,{1,1} });
+		aa.push_back(1);
+		ba.push_back({ 20,{1,1} });
+		aa.push_back(1);
 		ba.push_back({ 100,{1,1} });
 		aa.push_back(1);
-		//ba.push_back({ 10,{1,1} });
-		//aa.push_back(1);
 		zhankai = false;
 		loadimage(&cha1, _T("²æ1.png"));
 		loadimage(&cha2, _T("²æ2.png"));

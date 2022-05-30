@@ -33,19 +33,7 @@ void MymciSendString(const char * szCommand , char* szbuffer)//const string szCo
 		}
 	}
 }
-void initialize()
-{
-	IMAGE img1;
-	initgraph(1280, 720, EW_SHOWCONSOLE);
-	//setfillcolor(GREEN);
-	loadimage(&img1,_T("backgrondtupian.jpeg"));
-	initgraph(780, 520);
-	putimage(0, 0, &img1);
-	setfillcolor(GREEN);
-	while (1) { fillroundrect(200, 550, 400, 650, 30, 30); }
-	closegraph();
-}
-void showwwwwtime(gametime *l, map *a)
+void showwwwwtime(gametime* l, map* a)
 {
 	l->check();
 	l->showcaichan();
@@ -54,11 +42,6 @@ void showwwwwtime(gametime *l, map *a)
 }
 void game()
 {
-	
-}
-int main()
-{
-	
 	ExMessage m;
 	//initialize();
 	//game();
@@ -66,19 +49,18 @@ int main()
 	gametime l;
 	map a;
 	a.upload(bradish);
-	initgraph(860, 550,EW_SHOWCONSOLE);
+	initgraph(860, 550, EW_SHOWCONSOLE);
 	//weapon* tem = new bullet1(240, 220, &l);
-	
 	while (jieshu)
 	{
 		BeginBatchDraw();
 		a.show(bradish);
-		
-		thread zh(showwwwwtime,&l,&a);
+
+		thread zh(showwwwwtime, &l, &a);
 		l.jiancheshifou();
-		if (peekmessage(&m, EM_MOUSE)&& m.lbutton)
+		if (peekmessage(&m, EM_MOUSE) && m.lbutton)
 		{
-			cout << m.x<<m.y << endl;
+			cout << m.x << m.y << endl;
 			l.mianban(m);
 		}
 		zh.join();
@@ -86,4 +68,39 @@ int main()
 		EndBatchDraw();
 		cleardevice();
 	}
+}
+void initialize()
+{
+	IMAGE img1,h1,h2;
+	//initgraph(1280, 720, EW_SHOWCONSOLE);
+	//setfillcolor(GREEN);
+	loadimage(&img1,_T("backgrondtupian.jpeg"));
+	loadimage(&h1, _T("开始游戏.png"));
+	loadimage(&h2, _T("开始游戏2.png"));
+	initgraph(780, 520, EW_SHOWCONSOLE);
+	putimage(0, 0, &img1);
+	setfillcolor(GREEN);
+	MymciSendString(_T("open background.mp3 alias BackMusic"), NULL);
+	MymciSendString("play BackMusic repeat", NULL);
+	transparentimage2(-50, 200, &h1, &h2);
+	ExMessage m;
+	while (1) 
+	{ 
+		//fillroundrect(200, 550, 400, 650, 30, 30);
+		if (peekmessage(&m, EM_MOUSE) && m.lbutton)
+	    {
+			if (m.x > 30 && m.x < 399 && m.y>362 && m.y < 446)
+			{
+				game();
+				return;
+			}
+	    }
+	}
+	closegraph();
+}
+
+
+int main()
+{
+	initialize();
 }
